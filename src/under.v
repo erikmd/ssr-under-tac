@@ -44,7 +44,7 @@ Ltac do_pad_tac lem tac :=
     let lem' := eval unfold a in (lem a) in
     do_pad_tac lem' tac; clear_all a
     | forall x2 : _, forall p : _, _ => tac lem
-    | _ => fail 100 "Expecting a lemma whose type end with a function and a side-condition."
+    | _ => fail 100 "expecting a lemma whose type end with a function and a side-condition."
                "Cannot proceed with:" lem
     end.
 
@@ -60,7 +60,9 @@ Ltac do_sides_tac equ taclr :=
 and uses [x2] to avoid "evars leaking". *)
 (* Can we do variable refolding? *)
 Ltac rew_tac pat x2 equ :=
-  ssrpattern pat; let top := fresh in move=> top;
+  (ssrpattern pat
+   || fail 100 "the specified pattern does not match any subterm of the goal");
+  let top := fresh in move=> top;
   do_sides_tac
     equ
     ltac:(fun lhs rhs =>
@@ -104,9 +106,10 @@ Ltac under_tac rew pat lem intro_tac tac :=
             evar (R : Type);
             evar (x2 : I -> R);
             let lx2 := constr:(l x2) in
-            rew pat x2 lx2;
+            (rew pat x2 lx2
+             || fail 100 "the lhs of" lx2 "does not match any subterm of the goal");
             [clear_all3 x2 R I; cbv beta
-            |intro_tac; (tac || fail 100 "Cannot apply tactic under lemma" lem);
+            |intro_tac; (tac || fail 100 "cannot apply tactic under lemma" lem);
              clear_all3 x2 R I; try done]).
 
 (** ** The under tacticals (with no ssr pattern) *)
