@@ -1,6 +1,4 @@
-From mathcomp Require Import ssrmatching ssreflect ssrbool ssrfun eqtype ssrnat seq.
-From mathcomp Require Import div choice fintype tuple finfun bigop.
-From mathcomp Require Import prime binomial ssralg finset matrix.
+From mathcomp Require Import ssrmatching ssreflect.
 
 (* Without this line, doesn't compile with Coq 8.5... (issue with ssrpattern) *)
 Declare ML Module "ssreflect".
@@ -10,19 +8,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 (* Erik Martin-Dorel, 2016 *)
-
-(** * Additional lemma for [matrix] *)
-
-Lemma eq_mx R m n (k : unit) (F1 F2 : 'I_m -> 'I_n -> R) : (F1 =2 F2) ->
-  (\matrix[k]_(i, j) F1 i j)%R = (\matrix[k]_(i, j) F2 i j)%R.
-Proof. by move=> Heq2; apply/matrixP => i j; rewrite !mxE Heq2. Qed.
-Arguments eq_mx [R m n k F1] F2 _.
-
-(** * Additional lemma for [finset] *)
-
-Lemma eq_set (T : finType) (P1 P2 : pred T) :
-  P1 =1 P2 -> [set x | P1 x] = [set x | P2 x].
-Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
 
 (** * Tactic for rewriting under lambdas in MathComp *)
 
@@ -176,7 +161,24 @@ Tactic Notation "under"
        ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
   under_tac rew_tac pat lem i ltac:(move=> i j k) tac.
 
-(** * Tests and examples *)
+(** * Examples and tests *)
+
+From mathcomp Require Import ssrbool ssrfun eqtype ssrnat seq.
+From mathcomp Require Import div choice fintype tuple finfun bigop.
+From mathcomp Require Import prime binomial ssralg finset matrix.
+
+(** ** Additional lemma for [matrix] *)
+
+Lemma eq_mx R m n (k : unit) (F1 F2 : 'I_m -> 'I_n -> R) : (F1 =2 F2) ->
+  (\matrix[k]_(i, j) F1 i j)%R = (\matrix[k]_(i, j) F2 i j)%R.
+Proof. by move=> Heq2; apply/matrixP => i j; rewrite !mxE Heq2. Qed.
+Arguments eq_mx [R m n k F1] F2 _.
+
+(** ** Additional lemma for [finset] *)
+
+Lemma eq_set (T : finType) (P1 P2 : pred T) :
+  P1 =1 P2 -> [set x | P1 x] = [set x | P2 x].
+Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
 
 Section Tests.
 
@@ -239,7 +241,7 @@ Let testp2 (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(j in J) F j = \big[addn/O]_(j in A) F j -> True.
 Proof.
 move=> H.
-do [under eq_bigl J rewrite setIT] in H. (* the bigop variable "J" is kept *)
+do [under eq_bigl ? rewrite setIT] in H. (* the bigop variable "J" is kept *)
 done.
 Qed.
 
