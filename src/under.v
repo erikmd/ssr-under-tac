@@ -56,12 +56,18 @@ Ltac do_sides_tac equ taclr :=
     taclr a b
   end.
 
-(** [pretty_rename term i] tries to rename the index of [term] to [i],
-e.g. if [term] is a bigop expression.
-This convenience tactic could be extended to support more constructs. *)
+(** [pretty_rename term i] is a convenience tactic that tries to
+rename the index of [term] to [i], e.g. if [term] is a bigop expr. *)
 Ltac pretty_rename term i :=
-  rewrite -?[term]/(@BigOp.bigop _ _ _ _ (fun i => _))
-          -?[term]/(@SetDef.finset _ (fun i => _)).
+  rewrite -?[term]/(_ (fun i => _))
+          -?[term]/(_ _ (fun i => _))
+          -?[term]/(_ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ _ _ _ (fun i => _)).
 
 (** [rew_tac pat x2 equ] uses [equ] to rewrite occurrences of [pat]
 and uses [x2] to avoid "evars leaking".
