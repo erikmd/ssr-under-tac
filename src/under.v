@@ -24,9 +24,6 @@ Lemma eq_set (T : finType) (P1 P2 : pred T) :
   P1 =1 P2 -> [set x | P1 x] = [set x | P2 x].
 Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
 
-(** [under_big] allows one to apply a given tactic under some bigop
-or some matrix, and so on *)
-
 (** * Tactic for rewriting under lambdas in MathComp *)
 
 (** ** Preliminary tactics *)
@@ -50,69 +47,6 @@ Ltac do_pad_tac lem tac :=
     | _ => fail 100 "Expecting a lemma whose type end with a function and a side-condition."
                "Cannot proceed with:" lem
     end.
-
-(*
-Tactic Notation "do_pad" open_constr(lem) tactic(tac) :=
-  do_pad_tac lem tac.
-
-Tactic Notation "ssrpat" ssrpatternarg(p) :=
-  ssrpattern p.
-
-(* This doesn't work:
-
-Tactic Notation "rew" ssrpatternarg(pat) open_constr(equ) :=
-  rewrite [pat]equ.
-*)
-
-(* Tests *)
-
-Goal forall (R : ringType) (a b : R), (\sum_(i < 1) a + b = a + b)%R -> True.
-intros.
-do_pad eq_bigr (fun lhs => idtac lhs).
-Abort.
-
-Goal forall (R : ringType) (a b : 'M[R]_2), (a + b = b + a)%R.
-intros.
-do_pad eq_mx (fun l => pose proof l as L1).
-apply: L1.
-by move=> i j; rewrite GRing.addrC.
-Qed.
-
-Goal forall P1 P2,
-    \big[addn/O]_(i < 5 | P1 i) i = \big[addn/O]_(i < 5 | P2 i) i.
-intros.
-do_pad (@eq_bigl _ _ _ _ _ _ _) (fun l => pose proof l as L1).
-rewrite -> L1.
-2: done.
-set b := bigop _ _ _.
-ssrpat [b].
-Abort.
-*)
-
-(*
-Ltac do_lhs_tac equ tac :=
-  match type of equ with
-  | forall p : _, ?a = ?b =>
-    tac a
-  | ?a = ?b =>
-    tac a
-  end.
-
-Ltac do_rhs_tac equ tac :=
-  match type of equ with
-  | forall p : _, ?a = ?b =>
-    tac b
-  | ?a = ?b =>
-    tac b
-  end.
-
-(* Test *)
-
-Goal exists a : nat, a = a + 1 -> False.
-eexists => H.
-do_lhs_tac H ltac:(fun lhs => idtac lhs).
-Abort.
- *)
 
 Ltac do_sides_tac equ taclr :=
   match type of equ with
@@ -143,17 +77,6 @@ Ltac do_pat pat tac :=
     tac x
   end.
 
-(*
-Tactic Notation "trypat" open_constr(pat) tactic(tac) :=
-  do_pat pat tac.
-
-(* Test *)
-Goal forall (a : nat), \sum_(i < 1) (0 + a) = \sum_(i < 1) (0 + 0 + a).
-intros.
-trypat (bigop _ _ _) (fun l => have->: l = \sum_(i < 1) (a)).
-Abort.
-*)
-
 (** [rew_tac1] is similar to [rew_tac] but ignores the [pat] variable.
 Instead, it uses [equ] to rewrite the first occurrence of equ's lhs *)
 Ltac rew_tac1 pat x2 equ :=
@@ -167,8 +90,6 @@ Ltac rew_tac1 pat x2 equ :=
               lhs'
               ltac:(fun x =>
                 let top := fresh in set top := x;
-             (* let top' := eval unfold top in top in
-                unify top' lhs' with typeclass_instances; (* unneeded *) *)
                 rewrite [top]equ; clear_all top)).
 
 (** ** The main tactic *)
@@ -226,22 +147,6 @@ Tactic Notation "under"
        ssrpatternarg(p) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(Hij) "]" tactic(tac) :=
   under_tac rew_tac p lem ltac:(move=> i j Hij) tac.
 
-(** A shortcut when we want to rewrite the first occurrence of [bigop _ _ _] *)
-Notation big := (bigop _ _ _) (only parsing).
-
-(** [under] allows one to apply a given tactic under some bigop:
-    if [pat] is a local variable (let-in) that appears in the goal,
-    only the occurrences of [pat] will be rewritten;
-    otherwise the occurrences of the first bigop that matches [pat]
-    will be rewritten. *)
-
-(** [underp...in] allows one to apply a given tactic for rewriting
-    some bigop predicate:
-    if [pat] is a local variable (let-in) that appears in H,
-    only the occurrences of [pat] will be rewritten;
-    otherwise the occurrences of the first bigop that matches [pat]
-    will be rewritten. *)
-
 (** * Tests and examples *)
 
 Section Tests.
@@ -277,19 +182,19 @@ case: {Hneq0} n =>// n.
 by rewrite iteropS iterSr GRing.addr0.
 Qed.
 
-(* Another test lemma when the bigop appears in some hypothesis *)
+(* A test lemma for [under eq_bigr in] *)
 Let test3 (n : nat) (R : fieldType) (f : nat -> R) :
   (forall k : 'I_n, f k != 0%R) ->
   (\big[+%R/0%R]_(k < n) (f k / f k) +
   \big[+%R/0%R]_(k < n) (f k / f k) = n%:R + n%:R)%R -> True.
 Proof.
 move=> Hneq0 H.
-set b1 := {2}big in H.
+set b1 := {2}(bigop _ _ _) in H.
 do [under [b1] eq_bigr ? rewrite GRing.divff] in H. (* only b1 is rewritten *)
 done.
 Qed.
 
-(* A test lemma for [underp] *)
+(* A test lemma for [under eq_bigr under eq_bigl] *)
 Let testp1 (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(0 <= k < n)
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == k)
@@ -299,7 +204,7 @@ under eq_bigr ? under eq_bigl J rewrite setIT. (* the bigop variables are NOT ke
 done.
 Qed.
 
-(* A test lemma for [underp...in] *)
+(* A test lemma for [under eq_bigl in] *)
 Let testp2 (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == 1)
   \big[addn/O]_(j in J) F j = \big[addn/O]_(j in A) F j -> True.
