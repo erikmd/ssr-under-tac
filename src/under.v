@@ -56,10 +56,23 @@ Ltac do_sides_tac equ taclr :=
     taclr a b
   end.
 
+(** [pretty_rename term i] is a convenience tactic that tries to
+rename the index of [term] to [i], e.g. if [term] is a bigop expr. *)
+Ltac pretty_rename term i :=
+  rewrite -?[term]/(_ (fun i => _))
+          -?[term]/(_ _ (fun i => _))
+          -?[term]/(_ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ _ _ (fun i => _))
+          -?[term]/(_ _ _ _ _ _ _ _ _ (fun i => _)).
+
 (** [rew_tac pat x2 equ] uses [equ] to rewrite occurrences of [pat]
-and uses [x2] to avoid "evars leaking". *)
-(* Can we do variable refolding? *)
-Ltac rew_tac pat x2 equ :=
+and uses [x2] to avoid "evars leaking".
+Last argument [i] is used by [pretty_rename]. *)
+Ltac rew_tac pat x2 equ i :=
   (ssrpattern pat
    || fail 100 "the specified pattern does not match any subterm of the goal");
   let top := fresh "_top_" in move=> top;
@@ -68,34 +81,37 @@ Ltac rew_tac pat x2 equ :=
     ltac:(fun lhs rhs =>
             let top' := eval unfold top in top in
             let lhs' := eval unfold x2 in lhs in
+            let rhs' := eval unfold x2 in rhs in
             unify top' lhs' with typeclass_instances;
-            rewrite [top]equ);
+            rewrite [top]equ; pretty_rename rhs' i);
   clear_all top.
 
 Ltac do_pat pat tac :=
   match goal with
-    |- context [?x] =>
+  | |- context [?x] =>
     unify pat x with typeclass_instances;
     tac x
   end.
 
 (** [rew_tac1] is similar to [rew_tac] but ignores the [pat] variable.
-Instead, it uses [equ] to rewrite the first occurrence of [equ]'s lhs *)
-Ltac rew_tac1 pat x2 equ :=
+Instead, it uses [equ] to rewrite the first occurrence of [equ]'s lhs.
+Last argument [i] is used by [pretty_rename]. *)
+Ltac rew_tac1 pat x2 equ i :=
   (* rewrite equ. (* causes some evars leaking *) *)
   (* rewrite -> equ. (* could be possible also *) *)
   do_sides_tac
     equ
     ltac:(fun lhs rhs =>
             let lhs' := eval unfold x2 in lhs in
+            let rhs' := eval unfold x2 in rhs in
             do_pat
               lhs'
               ltac:(fun x =>
                 let top := fresh "_top_" in set top := x;
-                rewrite [top]equ; clear_all top)).
+                rewrite [top]equ; pretty_rename rhs' i; clear_all top)).
 
 (** ** The main tactic *)
-Ltac under_tac rew pat lem intro_tac tac :=
+Ltac under_tac rew pat lem i intro_tac tac :=
   do_pad_tac
     lem
     ltac:(fun l =>
@@ -106,7 +122,7 @@ Ltac under_tac rew pat lem intro_tac tac :=
             evar (R : Type);
             evar (x2 : I -> R);
             let lx2 := constr:(l x2) in
-            (rew pat x2 lx2
+            (rew pat x2 lx2 i
              || fail 100 "the lhs of" lx2 "does not match any subterm of the goal");
             [clear_all3 x2 R I; cbv beta
             |intro_tac; (tac || fail 100 "cannot apply tactic under lemma" lem);
@@ -121,19 +137,19 @@ matching [lem]'s lhs *)
 
 Tactic Notation "under"
        open_constr(lem) simple_intropattern(i) tactic(tac) :=
-  under_tac rew_tac1 false lem ltac:(move=> i) tac.
+  under_tac rew_tac1 false lem i ltac:(move=> i) tac.
 
 Tactic Notation "under"
        open_constr(lem) "[" simple_intropattern(i) "]" tactic(tac) :=
-  under_tac rew_tac1 false lem ltac:(move=> i) tac.
+  under_tac rew_tac1 false lem i ltac:(move=> i) tac.
 
 Tactic Notation "under"
        open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) "]" tactic(tac) :=
-  under_tac rew_tac1 false lem ltac:(move=> i j) tac.
+  under_tac rew_tac1 false lem i ltac:(move=> i j) tac.
 
 Tactic Notation "under"
        open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
-  under_tac rew_tac1 false lem ltac:(move=> i j k) tac.
+  under_tac rew_tac1 false lem i ltac:(move=> i j k) tac.
 
 (* Note: these definitions must come first, before the tacticals
 involving a ssrpatternarg *)
@@ -144,21 +160,21 @@ involving a ssrpatternarg *)
 
 Tactic Notation "under"
        ssrpatternarg(pat) open_constr(lem) simple_intropattern(i) tactic(tac) :=
-  under_tac rew_tac pat lem ltac:(move=> i) tac.
+  under_tac rew_tac pat lem i ltac:(move=> i) tac.
 
 (* Given the tactic grammar, we need to write "["..."]" below, else
 the into_pattern would lead to unwanted case analysis. *)
 Tactic Notation "under"
        ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) "]" tactic(tac) :=
-  under_tac rew_tac pat lem ltac:(move=> i) tac.
+  under_tac rew_tac pat lem i ltac:(move=> i) tac.
 
 Tactic Notation "under"
        ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) "]" tactic(tac) :=
-  under_tac rew_tac pat lem ltac:(move=> i j) tac.
+  under_tac rew_tac pat lem i ltac:(move=> i j) tac.
 
 Tactic Notation "under"
        ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
-  under_tac rew_tac pat lem ltac:(move=> i j k) tac.
+  under_tac rew_tac pat lem i ltac:(move=> i j k) tac.
 
 (** * Tests and examples *)
 
@@ -213,7 +229,7 @@ Let testp1 (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == k)
   \big[addn/O]_(j in J) F j >= 0.
 Proof.
-under eq_bigr ? under eq_bigl J rewrite setIT. (* the bigop variables are NOT kept *)
+under eq_bigr k under eq_bigl J rewrite setIT. (* the bigop variables are kept *)
 done.
 Qed.
 
@@ -223,7 +239,7 @@ Let testp2 (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(j in J) F j = \big[addn/O]_(j in A) F j -> True.
 Proof.
 move=> H.
-do [under eq_bigl J rewrite setIT] in H. (* the bigop variable "J" is NOT kept *)
+do [under eq_bigl J rewrite setIT] in H. (* the bigop variable "J" is kept *)
 done.
 Qed.
 
