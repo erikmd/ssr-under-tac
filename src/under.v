@@ -44,7 +44,7 @@ Ltac do_pad_tac lem tac :=
     let lem' := eval unfold a in (lem a) in
     do_pad_tac lem' tac; clear_all a
     | forall x2 : _, forall p : _, _ => tac lem
-    | _ => fail 100 "expecting a lemma whose type end with a function and a side-condition."
+    | _ => fail 100 "expecting a lemma whose type ends with a function and a side-condition."
                "Cannot proceed with:" lem
     end.
 
@@ -123,12 +123,12 @@ Tactic Notation "under"
   under_tac rew_tac1 false lem ltac:(move=> i) tac.
 
 Tactic Notation "under"
-       open_constr(lem) "[" simple_intropattern(i) simple_intropattern(Hi) "]" tactic(tac) :=
-  under_tac rew_tac1 false lem ltac:(move=> i Hi) tac.
+       open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) "]" tactic(tac) :=
+  under_tac rew_tac1 false lem ltac:(move=> i j) tac.
 
 Tactic Notation "under"
-       open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(Hij) "]" tactic(tac) :=
-  under_tac rew_tac1 false lem ltac:(move=> i j Hij) tac.
+       open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
+  under_tac rew_tac1 false lem ltac:(move=> i j k) tac.
 
 (** ** The under tacticals, upto 3 vars to introduce in the context *)
 
@@ -143,12 +143,12 @@ Tactic Notation "under"
   under_tac rew_tac p lem ltac:(move=> i) tac.
 
 Tactic Notation "under"
-       ssrpatternarg(p) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(Hi) "]" tactic(tac) :=
-  under_tac rew_tac p lem ltac:(move=> i Hi) tac.
+       ssrpatternarg(p) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) "]" tactic(tac) :=
+  under_tac rew_tac p lem ltac:(move=> i j) tac.
 
 Tactic Notation "under"
-       ssrpatternarg(p) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(Hij) "]" tactic(tac) :=
-  under_tac rew_tac p lem ltac:(move=> i j Hij) tac.
+       ssrpatternarg(p) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
+  under_tac rew_tac p lem ltac:(move=> i j k) tac.
 
 (** * Tests and examples *)
 
