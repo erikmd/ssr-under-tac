@@ -18,6 +18,12 @@ Lemma eq_mx R m n (k : unit) (F1 F2 : 'I_m -> 'I_n -> R) : (F1 =2 F2) ->
 Proof. by move=> Heq2; apply/matrixP => i j; rewrite !mxE Heq2. Qed.
 Arguments eq_mx [R m n k F1] F2 _.
 
+(** * Additional lemma for [finset] *)
+
+Lemma eq_set (T : finType) (P1 P2 : pred T) :
+  P1 =1 P2 -> [set x | P1 x] = [set x | P2 x].
+Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
+
 (** [under_big] allows one to apply a given tactic under some bigop
 or some matrix, and so on *)
 
@@ -307,5 +313,9 @@ Qed.
 Let test_addmxC (T : zmodType) (m n : nat) (A B : 'M[T]_(m, n)) :
   (A + B = B + A)%R.
 Proof. by under eq_mx [? ?] rewrite GRing.addrC. Qed.
+
+(* A test lemma for sets *)
+Let test_setIC (T : finType) (A B : {set T}) : A :&: B = B :&: A.
+Proof. by under eq_set ? rewrite andbC. Qed.
 
 End Tests.
