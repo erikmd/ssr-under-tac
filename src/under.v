@@ -110,7 +110,10 @@ Ltac under_tac rew pat lem i intro_tac tac :=
             (rew pat x2 lx2 i
              || fail 100 "the lhs of" lx2 "does not match any subterm of the goal");
             [clear_all3 x2 R I; cbv beta
-            |intro_tac; (tac || fail 100 "cannot apply tactic under lemma" lem);
+            |(intro_tac || fail 100 "under lemma" lem "we cannot introduce"
+                                   "the identifier(s) you specified."
+                                   "Maybe some identifier is already used.");
+             (tac || fail 100 "cannot apply tactic under lemma" lem);
              clear_all3 x2 R I; try done]).
 
 (** ** The under tacticals, upto 3 vars to introduce in the context *)
