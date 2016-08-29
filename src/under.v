@@ -185,18 +185,20 @@ Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
 
 Section Tests.
 
-(* A test lemma covering several testcases. *)
+(* A test with a ssr pattern arg *)
 Let test1 (n : nat) (R : ringType) (f1 f2 g : nat -> R) :
   (\big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) +
   \big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) =
   \big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) +
   \big[+%R/0%R]_(i < n) (f1 i * g i) + \big[+%R/0%R]_(i < n) (f2 i * g i))%R.
 Proof.
-set b1 := {2}(bigop _ _ _).
-under [b1] eq_bigr x rewrite GRing.mulrDl. (* only b1 is rewritten *)
+under eq_bigr x rewrite GRing.mulrDl.
+(* 3 occurrences are rewritten; the bigop variable becomes "x" *)
 
-Undo 1. rewrite /b1; clear b1.
-under eq_bigr x rewrite GRing.mulrDl. (* 3 occurrences are rewritten *)
+Undo 1.
+Local Open Scope ring_scope.
+
+under [X in _ + X = _] eq_bigr x rewrite GRing.mulrDl.
 
 rewrite big_split /=.
 by rewrite GRing.addrA.
@@ -208,7 +210,7 @@ Let test2 (n : nat) (R : fieldType) (f : nat -> R) :
   (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R.
 Proof.
 move=> Hneq0.
-do [under eq_bigr ? rewrite GRing.divff]; last first. (* the bigop variable becomes "i" *)
+do [under eq_bigr ? rewrite GRing.divff]; last first.
 by rewrite eq_sym.
 
 rewrite big_const cardT /= size_enum_ord /GRing.natmul.
@@ -219,17 +221,15 @@ Qed.
 (* A test lemma for [under eq_bigr in] *)
 Let test3 (n : nat) (R : fieldType) (f : nat -> R) :
   (forall k : 'I_n, f k != 0%R) ->
-  (\big[+%R/0%R]_(k < n) (f k / f k) +
-  \big[+%R/0%R]_(k < n) (f k / f k) = n%:R + n%:R)%R -> True.
+  (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R -> True.
 Proof.
 move=> Hneq0 H.
-set b1 := {2}(bigop _ _ _) in H.
-do [under [b1] eq_bigr ? rewrite GRing.divff] in H. (* only b1 is rewritten *)
+do [under eq_bigr ? rewrite GRing.divff] in H.
 done.
 Qed.
 
 (* A test lemma for [under eq_bigr under eq_bigl] *)
-Let testp1 (A : finType) (n : nat) (F : A -> nat) :
+Let test4 (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(0 <= k < n)
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == k)
   \big[addn/O]_(j in J) F j >= 0.
@@ -239,8 +239,8 @@ done.
 Qed.
 
 (* A test lemma for [under eq_bigl in] *)
-Let testp2 (A : finType) (n : nat) (F : A -> nat) :
-  \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == 1)
+Let test5 (A : finType) (n : nat) (F : A -> nat) :
+  \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == 1%N)
   \big[addn/O]_(j in J) F j = \big[addn/O]_(j in A) F j -> True.
 Proof.
 move=> H.
