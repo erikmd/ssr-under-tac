@@ -257,4 +257,14 @@ Proof. by under eq_mx [? ?] rewrite GRing.addrC. Qed.
 Let test_setIC (T : finType) (A B : {set T}) : A :&: B = B :&: A.
 Proof. by under eq_set ? rewrite andbC. Qed.
 
+(* A test with several side-conditions *)
+Let test_sc2 (n : nat) :
+  \big[addn/O]_(i < n.+1) (n - i)%N = \big[addn/O]_(j < n.+1) j.
+Proof.
+rewrite (reindex (fun i : 'I_n.+1 => inord (n - i))); last first.
+  apply/onW_bij/inv_bij=> -[i Hi]; rewrite inordK ?ltnS ?leq_subr // subKn //.
+  by rewrite inord_val.
+by under eq_bigr i rewrite inordK ?ltnS ?leq_subr // subKn; case: i.
+Qed.
+
 End Tests.
