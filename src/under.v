@@ -186,7 +186,7 @@ Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
 Section Tests.
 
 (* A test with a ssr pattern arg *)
-Let test1 (n : nat) (R : ringType) (f1 f2 g : nat -> R) :
+Let test_ssrpat (n : nat) (R : ringType) (f1 f2 g : nat -> R) :
   (\big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) +
   \big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) =
   \big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) +
@@ -205,7 +205,7 @@ by rewrite GRing.addrA.
 Qed.
 
 (* A test with a side-condition. *)
-Let test2 (n : nat) (R : fieldType) (f : nat -> R) :
+Let test_sc (n : nat) (R : fieldType) (f : nat -> R) :
   (forall k : 'I_n, 0%R != f k) ->
   (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R.
 Proof.
@@ -219,7 +219,7 @@ by rewrite iteropS iterSr GRing.addr0.
 Qed.
 
 (* A test lemma for [under eq_bigr in] *)
-Let test3 (n : nat) (R : fieldType) (f : nat -> R) :
+Let test_rin (n : nat) (R : fieldType) (f : nat -> R) :
   (forall k : 'I_n, f k != 0%R) ->
   (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R -> True.
 Proof.
@@ -229,7 +229,7 @@ done.
 Qed.
 
 (* A test lemma for [under eq_bigr under eq_bigl] *)
-Let test4 (A : finType) (n : nat) (F : A -> nat) :
+Let test_rl (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(0 <= k < n)
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == k)
   \big[addn/O]_(j in J) F j >= 0.
@@ -239,7 +239,7 @@ done.
 Qed.
 
 (* A test lemma for [under eq_bigl in] *)
-Let test5 (A : finType) (n : nat) (F : A -> nat) :
+Let test_lin (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == 1%N)
   \big[addn/O]_(j in J) F j = \big[addn/O]_(j in A) F j -> True.
 Proof.
