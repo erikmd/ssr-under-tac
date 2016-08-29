@@ -24,7 +24,7 @@ Ltac do_pad_tac lem tac :=
   match type of lem with
   | forall x1 : ?A, forall x2 : _, forall p : _, _ =>
     (* idtac A; *)
-    let a := fresh "_a_" in
+    let a := fresh "_evar_a_" in
     evar (a : A);
     let lem' := eval unfold a in (lem a) in
     do_pad_tac lem' tac; clear_all a
@@ -60,7 +60,7 @@ Last argument [i] is used by [pretty_rename]. *)
 Ltac rew_tac pat x2 equ i :=
   (ssrpattern pat
    || fail 100 "the specified pattern does not match any subterm of the goal");
-  let top := fresh "_top_" in move=> top;
+  let top := fresh in move=> top;
   do_sides_tac
     equ
     ltac:(fun lhs rhs =>
@@ -92,7 +92,7 @@ Ltac rew_tac1 pat x2 equ i :=
             do_pat
               lhs'
               ltac:(fun x =>
-                let top := fresh "_top_" in set top := x;
+                let top := fresh in set top := x;
                 rewrite [top]equ; pretty_rename rhs' i; clear_all top)).
 
 (** ** The main tactic *)
@@ -100,9 +100,9 @@ Ltac under_tac rew pat lem i intro_tac tac :=
   do_pad_tac
     lem
     ltac:(fun l =>
-            let I := fresh "_I_" in
-            let R := fresh "_R_" in
-            let x2 := fresh "_x2_" in
+            let I := fresh "_evar_I_" in
+            let R := fresh "_evar_R_" in
+            let x2 := fresh "_evar_x2_" in
             evar (I : Type);
             evar (R : Type);
             evar (x2 : I -> R);
