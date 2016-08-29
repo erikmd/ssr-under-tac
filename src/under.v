@@ -244,7 +244,7 @@ Let testp2 (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(j in J) F j = \big[addn/O]_(j in A) F j -> True.
 Proof.
 move=> H.
-do [under eq_bigl ? rewrite setIT] in H. (* the bigop variable "J" is kept *)
+do [under eq_bigl J rewrite setIT] in H. (* the bigop variable "J" is kept *)
 done.
 Qed.
 
