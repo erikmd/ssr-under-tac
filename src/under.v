@@ -22,7 +22,6 @@ Ltac clear_all3 h1 h2 h3 :=
 Ltac do_pad_tac lem tac :=
   match type of lem with
   | forall x1 : ?A, forall x2 : _, forall p : _, _ =>
-    (* idtac A; *)
     let a := fresh "_evar_a_" in
     evar (a : A);
     let lem' := eval unfold a in (lem a) in
@@ -81,8 +80,7 @@ Ltac do_pat pat tac :=
 Instead, it uses [equ] to rewrite the first occurrence of [equ]'s lhs.
 Last argument [i] is used by [pretty_rename]. *)
 Ltac rew_tac1 pat x2 equ i :=
-  (* rewrite equ. (* causes some evars leaking *) *)
-  (* rewrite -> equ. (* could be possible also *) *)
+  (* doing simply (* rewrite equ. *) would cause some evars leaking *)
   do_sides_tac
     equ
     ltac:(fun lhs rhs =>
@@ -122,6 +120,9 @@ Ltac under_tac rew pat lem i intro_tac tac :=
 (** the tactic will rewrite [lem] (then apply [tac]) at the first term
 matching [lem]'s lhs *)
 
+(* Note: these 4 definitions must come first, before the 4 definitions
+of the tacticals involving a ssrpatternarg *)
+
 Tactic Notation "under"
        open_constr(lem) simple_intropattern(i) tactic(tac) :=
   under_tac rew_tac1 false lem i ltac:(move=> i) tac.
@@ -138,9 +139,6 @@ Tactic Notation "under"
        open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
   under_tac rew_tac1 false lem i ltac:(move=> i j k) tac.
 
-(* Note: these definitions must come first, before the tacticals
-involving a ssrpatternarg *)
-
 (** *** with a ssr pattern argument *)
 
 (** all occurrences matching [pat] will be rewritten using [lem] then [tac] *)
@@ -150,7 +148,7 @@ Tactic Notation "under"
   under_tac rew_tac pat lem i ltac:(move=> i) tac.
 
 (* Given the tactic grammar, we need to write "["..."]" below, else
-the into_pattern would lead to unwanted case analysis. *)
+the intro-pattern would lead to unwanted case analysis. *)
 Tactic Notation "under"
        ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) "]" tactic(tac) :=
   under_tac rew_tac pat lem i ltac:(move=> i) tac.
