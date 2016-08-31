@@ -1,3 +1,4 @@
+(* This file was written by Erik Martin-Dorel, 2016 *)
 From mathcomp Require Import ssrmatching ssreflect.
 
 (* Without this line, doesn't compile with Coq 8.5... (issue with ssrpattern) *)
@@ -6,8 +7,6 @@ Declare ML Module "ssreflect".
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
-(* Erik Martin-Dorel, 2016 *)
 
 (** * Tactic for rewriting under lambdas in MathComp *)
 
