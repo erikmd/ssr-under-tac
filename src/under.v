@@ -107,7 +107,7 @@ Ltac under_tac rew pat lem i intro_tac tac :=
             evar (x2 : I -> R);
             let lx2 := constr:(l x2) in
             (rew pat x2 lx2 i
-             || fail 100 "the lhs of" lx2 "does not match any subterm of the goal");
+             || fail 100 "the lhs of" lx2 "does not match the selected subterms of the goal");
             [clear_all3 x2 R I
             |(intro_tac || fail 100 "under lemma" lem "we cannot introduce"
                                    "the identifier(s) you specified."
