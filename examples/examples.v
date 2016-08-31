@@ -20,6 +20,8 @@ Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
 
 Section Tests.
 
+Local Open Scope ring_scope.
+
 (* A test with a ssr pattern arg *)
 Let test_ssrpat (n : nat) (R : ringType) (f1 f2 g : nat -> R) :
   (\big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) +
@@ -31,7 +33,6 @@ under eq_bigr x rewrite GRing.mulrDl.
 (* 3 occurrences are rewritten; the bigop variable becomes "x" *)
 
 Undo 1.
-Local Open Scope ring_scope.
 
 under [X in _ + X = _] eq_bigr x rewrite GRing.mulrDl.
 
