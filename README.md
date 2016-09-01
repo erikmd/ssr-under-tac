@@ -15,7 +15,7 @@ Usage
 Examples
 --------
 * `under [X in _ = X + _ + _] eq_bigr [i Hi] rewrite GRing.mulrDl.`  
-* `under _ eq_bigr ? under _ eq_bigl ? rewrite setIT.`   
+* `under _ eq_bigr [?] under _ eq_bigl [?] rewrite setIT.`   
 
 For more examples, see the [examples.v](examples/examples.v) file.
 
