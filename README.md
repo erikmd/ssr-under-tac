@@ -17,7 +17,7 @@ Examples
 * `under [X in _ = X + _ + _] eq_bigr [i Hi] rewrite GRing.mulrDl.`  
 * `under eq_bigr ? under eq_bigl ? rewrite setIT.`   
 
-For more examples, see the [examples.v](examples/examples.v) file.
+For more examples, see the [examples.v](src/examples.v) file.
 
 Author
 ------
