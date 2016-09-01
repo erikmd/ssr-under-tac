@@ -1,10 +1,6 @@
 (* This file was written by Erik Martin-Dorel, 2016 *)
 Require Import mathcomp.ssreflect.ssreflect.
-From mathcomp
 Require Import ssrmatching.
-
-(* Without this line, doesn't compile with Coq 8.5... (issue with ssrpattern) *)
-Declare ML Module "ssreflect".
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -58,7 +54,7 @@ Ltac pretty_rename term i :=
 and uses [x2] to avoid "evars leaking".
 Last argument [i] is used by [pretty_rename]. *)
 Ltac rew_tac pat x2 equ i :=
-  (ssrpattern pat
+  ((ssrpattern pat)
    || fail 100 "the specified pattern does not match any subterm of the goal");
   let top := fresh in move=> top;
   do_sides_tac
