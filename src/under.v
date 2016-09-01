@@ -142,19 +142,19 @@ Tactic Notation "under"
 (** all occurrences matching [pat] will be rewritten using [lem] then [tac] *)
 
 Tactic Notation "under"
-       ssrpatternarg(pat) open_constr(lem) simple_intropattern(i) tactic(tac) :=
+       "[" ssrpatternarg(pat) "]" open_constr(lem) simple_intropattern(i) tactic(tac) :=
   under_tac rew_tac pat lem i ltac:(move=> i) tac.
 
 (* Given the tactic grammar, we need to write "["..."]" below, else
 the intro-pattern would lead to unwanted case analysis. *)
 Tactic Notation "under"
-       ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) "]" tactic(tac) :=
+       "[" ssrpatternarg(pat) "]" open_constr(lem) "[" simple_intropattern(i) "]" tactic(tac) :=
   under_tac rew_tac pat lem i ltac:(move=> i) tac.
 
 Tactic Notation "under"
-       ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) "]" tactic(tac) :=
+       "[" ssrpatternarg(pat) "]" open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) "]" tactic(tac) :=
   under_tac rew_tac pat lem i ltac:(move=> i j) tac.
 
 Tactic Notation "under"
-       ssrpatternarg(pat) open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
+       "[" ssrpatternarg(pat) "]" open_constr(lem) "[" simple_intropattern(i) simple_intropattern(j) simple_intropattern(k) "]" tactic(tac) :=
   under_tac rew_tac pat lem i ltac:(move=> i j k) tac.
