@@ -34,7 +34,8 @@ under _ eq_bigr [x] rewrite GRing.mulrDl.
 
 Undo 1.
 
-under [X in _ + X = _] eq_bigr [x] rewrite GRing.mulrDl.
+under [[X in _ + X = _]] eq_bigr [x] rewrite GRing.mulrDl.
+(* With [X in _ + X = _], doesn't compile with Coq 8.5: issue with ssrpattern *)
 
 rewrite big_split /=.
 by rewrite GRing.addrA.
