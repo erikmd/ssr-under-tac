@@ -29,12 +29,12 @@ Let test_ssrpat (n : nat) (R : ringType) (f1 f2 g : nat -> R) :
   \big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) +
   \big[+%R/0%R]_(i < n) (f1 i * g i) + \big[+%R/0%R]_(i < n) (f2 i * g i))%R.
 Proof.
-under _ eq_bigr [x] rewrite GRing.mulrDl.
+under eq_bigr x rewrite GRing.mulrDl.
 (* 3 occurrences are rewritten; the bigop variable becomes "x" *)
 
 Undo 1.
 
-under [[X in _ + X = _]] eq_bigr [x] rewrite GRing.mulrDl.
+under [[X in _ + X = _]] eq_bigr x rewrite GRing.mulrDl.
 (* With [X in _ + X = _], doesn't compile with Coq 8.5: issue with ssrpattern *)
 
 rewrite big_split /=.
@@ -47,7 +47,7 @@ Let test_sc (n : nat) (R : fieldType) (f : nat -> R) :
   (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R.
 Proof.
 move=> Hneq0.
-do [under _ eq_bigr [?] rewrite GRing.divff]; last first.
+do [under eq_bigr ? rewrite GRing.divff]; last first.
 by rewrite eq_sym.
 
 rewrite big_const cardT /= size_enum_ord /GRing.natmul.
@@ -61,7 +61,7 @@ Let test_rin (n : nat) (R : fieldType) (f : nat -> R) :
   (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R -> True.
 Proof.
 move=> Hneq0 H.
-do [under _ eq_bigr [?] rewrite GRing.divff] in H.
+do [under eq_bigr ? rewrite GRing.divff] in H.
 done.
 Qed.
 
@@ -71,7 +71,7 @@ Let test_rl (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == k)
   \big[addn/O]_(j in J) F j >= 0.
 Proof.
-under _ eq_bigr [k] under _ eq_bigl [J] rewrite setIT. (* the bigop variables are kept *)
+under eq_bigr k under eq_bigl J rewrite setIT. (* the bigop variables are kept *)
 done.
 Qed.
 
@@ -81,18 +81,18 @@ Let test_lin (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(j in J) F j = \big[addn/O]_(j in A) F j -> True.
 Proof.
 move=> H.
-do [under _ eq_bigl [J] rewrite setIT] in H. (* the bigop variable "J" is kept *)
+do [under eq_bigl J rewrite setIT] in H. (* the bigop variable "J" is kept *)
 done.
 Qed.
 
 (* A test lemma for matrices *)
 Let test_addmxC (T : zmodType) (m n : nat) (A B : 'M[T]_(m, n)) :
   (A + B = B + A)%R.
-Proof. by under _ eq_mx [? ?] rewrite GRing.addrC. Qed.
+Proof. by under eq_mx [? ?] rewrite GRing.addrC. Qed.
 
 (* A test lemma for sets *)
 Let test_setIC (T : finType) (A B : {set T}) : A :&: B = B :&: A.
-Proof. by under _ eq_set [?] rewrite andbC. Qed.
+Proof. by under eq_set ? rewrite andbC. Qed.
 
 (* A test with several side-conditions *)
 Let test_sc2 (n : nat) :
@@ -101,7 +101,7 @@ Proof.
 rewrite (reindex (fun i : 'I_n.+1 => inord (n - i))); last first.
   apply/onW_bij/inv_bij=> -[i Hi]; rewrite inordK ?ltnS ?leq_subr // subKn //.
   by rewrite inord_val.
-by under _ eq_bigr [i] rewrite inordK ?ltnS ?leq_subr // subKn; case: i.
+by under eq_bigr i rewrite inordK ?ltnS ?leq_subr // subKn; case: i.
 Qed.
 
 End Tests.

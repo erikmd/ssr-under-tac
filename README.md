@@ -10,12 +10,12 @@ Usage
 
 * `under [ssrpattern] eq_lemma [intropattern] tactic.`  
   or simply   
-* `under _ eq_lemma [intropattern] tactic.`  
+* `under eq_lemma [intropattern] tactic.`  
 
 Examples
 --------
 * `under [X in _ = X + _ + _] eq_bigr [i Hi] rewrite GRing.mulrDl.`  
-* `under _ eq_bigr [?] under _ eq_bigl [?] rewrite setIT.`   
+* `under eq_bigr ? under eq_bigl ? rewrite setIT.`   
 
 For more examples, see the [examples.v](examples/examples.v) file.
 
