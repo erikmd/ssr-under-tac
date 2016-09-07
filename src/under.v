@@ -12,6 +12,8 @@ Unset Printing Implicit Defensive.
 
 (** * Tactic for rewriting under lambdas in MathComp *)
 
+Module Private.
+
 (** ** Preliminary tactics *)
 
 Ltac clear_all h :=
@@ -114,6 +116,10 @@ Ltac under_tac rew pat lem i intro_tac tac :=
                                    "Maybe some identifier is already used.");
              (tac || fail 100 "cannot apply tactic under lemma" lem);
              clear_all3 x2 R I; try done]).
+
+End Private.
+
+Import Private.
 
 (** ** The under tacticals, upto 3 vars to introduce in the context *)
 
