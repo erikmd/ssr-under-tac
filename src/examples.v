@@ -40,7 +40,7 @@ under eq_bigr x rewrite GRing.mulrDl.
 
 Undo 1.
 
-under [X in _ + X = _] eq_bigr x rewrite GRing.mulrDl.
+under [[X in _ + X = _]] eq_bigr x rewrite GRing.mulrDl.
 
 rewrite big_split /=.
 by rewrite GRing.addrA.
