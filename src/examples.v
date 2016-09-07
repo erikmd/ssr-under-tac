@@ -10,6 +10,12 @@ Lemma eq_mx R m n (k : unit) (F1 F2 : 'I_m -> 'I_n -> R) : (F1 =2 F2) ->
 Proof. by move=> Heq2; apply/matrixP => i j; rewrite !mxE Heq2. Qed.
 Arguments eq_mx [R m n k F1] F2 _.
 
+(** * Additional lemma for [finfun] *)
+
+Lemma eq_ffun (aT : finType) rT (g1 g2 : aT -> rT) : g1 =1 g2 ->
+  [ffun x => g1 x] = [ffun x => g2 x].
+Proof. by move=> Heq1; apply/ffunP => x; rewrite !ffunE Heq1. Qed.
+
 (** * Additional lemma for [finset] *)
 
 Lemma eq_set (T : finType) (P1 P2 : pred T) :
