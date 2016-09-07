@@ -5,6 +5,12 @@ This repository gathers a Coq theory [under.v](src/under.v) providing
 several tactics to easily rewrite under lambdas within the
 SSReflect/MathComp library.
 
+Compatibility
+-------------
+
+The `master` branch of this repo has been tested with Coq 8.5(pl2) and
+[a recent version of MathComp](https://github.com/math-comp/math-comp/tree/3b97308b6314e34d78a6f14c8173956aa64bd026).
+
 Usage
 -----
 
