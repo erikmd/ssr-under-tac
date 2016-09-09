@@ -27,6 +27,7 @@ Proof. by move=> H; apply/setP => x; rewrite !inE H. Qed.
 Section Tests.
 
 Local Open Scope ring_scope.
+Import GRing.Theory.
 
 (* A test with a ssr pattern arg *)
 Let test_ssrpat (n : nat) (R : ringType) (f1 f2 g : nat -> R) :
@@ -35,15 +36,15 @@ Let test_ssrpat (n : nat) (R : ringType) (f1 f2 g : nat -> R) :
   \big[+%R/0%R]_(i < n) ((f1 i + f2 i) * g i) +
   \big[+%R/0%R]_(i < n) (f1 i * g i) + \big[+%R/0%R]_(i < n) (f2 i * g i))%R.
 Proof.
-under eq_bigr x rewrite GRing.mulrDl.
+under eq_bigr x rewrite mulrDl.
 (* 3 occurrences are rewritten; the bigop variable becomes "x" *)
 
 Undo 1.
 
-under [[X in _ + X = _]] eq_bigr x rewrite GRing.mulrDl.
+under [[X in _ + X = _]] eq_bigr x rewrite mulrDl.
 
 rewrite big_split /=.
-by rewrite GRing.addrA.
+by rewrite addrA.
 Qed.
 
 (* A test with a side-condition. *)
@@ -51,13 +52,9 @@ Let test_sc (n : nat) (R : fieldType) (f : nat -> R) :
   (forall k : 'I_n, 0%R != f k) ->
   (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R.
 Proof.
-move=> Hneq0.
-do [under eq_bigr ? rewrite GRing.divff]; last first.
-by rewrite eq_sym.
-
-rewrite big_const cardT /= size_enum_ord /GRing.natmul.
-case: {Hneq0} n =>// n.
-by rewrite iteropS iterSr GRing.addr0.
+move=> Hneq0; under eq_bigr ? rewrite divff; last by rewrite eq_sym.
+under eq_bigr ? rewrite -[1]/(1%:R); rewrite -natr_sum.
+by rewrite sum1_card cardT size_enum_ord.
 Qed.
 
 (* A test lemma for [under eq_bigr in] *)
@@ -66,7 +63,7 @@ Let test_rin (n : nat) (R : fieldType) (f : nat -> R) :
   (\big[+%R/0%R]_(k < n) (f k / f k) = n%:R)%R -> True.
 Proof.
 move=> Hneq0 H.
-do [under eq_bigr ? rewrite GRing.divff] in H.
+do [under eq_bigr [? H] rewrite divff] in H.
 done.
 Qed.
 
@@ -76,7 +73,7 @@ Let test_rl (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == k)
   \big[addn/O]_(j in J) F j >= 0.
 Proof.
-under eq_bigr k under eq_bigl J rewrite setIT. (* the bigop variables are kept *)
+under eq_bigr k under eq_bigl l rewrite setIT. (* the bigop variables are kept *)
 done.
 Qed.
 
@@ -93,7 +90,7 @@ Qed.
 (* A test lemma for matrices *)
 Let test_addmxC (T : zmodType) (m n : nat) (A B : 'M[T]_(m, n)) :
   (A + B = B + A)%R.
-Proof. by under eq_mx [? ?] rewrite GRing.addrC. Qed.
+Proof. by under eq_mx [? ?] rewrite addrC. Qed.
 
 (* A test lemma for sets *)
 Let test_setIC (T : finType) (A B : {set T}) : A :&: B = B :&: A.
@@ -106,7 +103,7 @@ Proof.
 rewrite (reindex (fun i : 'I_n.+1 => inord (n - i))); last first.
   apply/onW_bij/inv_bij=> -[i Hi]; rewrite inordK ?ltnS ?leq_subr // subKn //.
   by rewrite inord_val.
-by under eq_bigr i rewrite inordK ?ltnS ?leq_subr // subKn; case: i.
+by under eq_bigr i do [rewrite inordK ?ltnS ?leq_subr // subKn; case: i].
 Qed.
 
 End Tests.
