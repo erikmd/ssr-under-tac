@@ -1,10 +1,6 @@
 (* This file was written by Erik Martin-Dorel, 2016 *)
 Require Import mathcomp.ssreflect.ssreflect.
-From mathcomp
 Require Import ssrmatching.
-
-(* Without this line, doesn't compile with Coq 8.5... (issue with ssrpattern) *)
-Declare ML Module "ssreflect".
 
 Set Implicit Arguments.
 Unset Strict Implicit.
