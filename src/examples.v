@@ -73,7 +73,7 @@ Let test_rl (A : finType) (n : nat) (F : A -> nat) :
   \big[addn/O]_(J in {set A} | #|J :&: [set: A]| == k)
   \big[addn/O]_(j in J) F j >= 0.
 Proof.
-under eq_bigr k under eq_bigl l rewrite setIT. (* the bigop variables are kept *)
+under eq_bigr [k Hk] under eq_bigl J rewrite setIT. (* the bigop variables are kept *)
 done.
 Qed.
 
