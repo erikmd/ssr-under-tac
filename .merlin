@@ -1,0 +1,46 @@
+FLG -rectypes -thread
+
+S ../coq/config
+B ../coq/config
+S ../coq/ide
+B ../coq/ide
+S ../coq/lib
+B ../coq/lib
+S ../coq/intf
+B ../coq/intf
+S ../coq/kernel
+B ../coq/kernel
+S ../coq/kernel/byterun
+B ../coq/kernel/byterun
+S ../coq/library
+B ../coq/library
+S ../coq/engine
+B ../coq/engine
+S ../coq/pretyping
+B ../coq/pretyping
+S ../coq/interp
+B ../coq/interp
+S ../coq/proofs
+B ../coq/proofs
+S ../coq/tactics
+B ../coq/tactics
+S ../coq/printing
+B ../coq/printing
+S ../coq/parsing
+B ../coq/parsing
+S ../coq/stm
+B ../coq/stm
+S ../coq/toplevel
+B ../coq/toplevel
+
+S ../coq/ltac
+B ../coq/ltac
+
+S ../coq/tools
+B ../coq/tools
+S ../coq/tools/coqdoc
+B ../coq/tools/coqdoc
+S ../coq/dev
+B ../coq/dev
+
+PKG threads.posix
