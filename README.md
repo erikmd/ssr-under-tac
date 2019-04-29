@@ -2,14 +2,20 @@ ssr-under-tac
 =============
 
 This repository gathers a Coq theory [under.v](src/under.v) providing
-several tactics to easily rewrite under lambdas within the
-SSReflect/MathComp library.
+a tactic (implemented in pure Ltac) to easily rewrite under lambdas
+within the SSReflect/MathComp library.
+
+> **NOTE: This GitHub repository is not maintained anymore**.
+> 
+> Please consider using the new implementation of the `under` tactic,
+> which has been reimplemented from scratch jointly with Enrico Tassi
+> in [PR coq/coq#9651](https://github.com/coq/coq/pull/9651).
 
 Compatibility
 -------------
 
-The `master` branch of this repo has been tested with Coq 8.5(pl2) and
-[a recent version of MathComp](https://github.com/math-comp/math-comp/tree/3b97308b6314e34d78a6f14c8173956aa64bd026).
+The `master` branch of this repo had been tested with Coq 8.5(pl2) and
+[math-comp 3b97308](https://github.com/math-comp/math-comp/tree/3b97308b6314e34d78a6f14c8173956aa64bd026).
 
 Usage
 -----
